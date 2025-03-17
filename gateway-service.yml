@@ -5,7 +5,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issue-uri:  # Falta completar con el servidor de autenticación OAuth2.
+          issue-uri: http://localhost:8080/realms/dh
 application:
   name: gateway-service  # Identificador del servicio.
 cloud:

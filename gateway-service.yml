@@ -26,5 +26,5 @@ cloud:
           - AddRequestHeader=X-Request-from, gateway  # Agrega un header a la solicitud.
           - AddResponseHeader=X-Response-Red, blue  # Agrega un header a la respuesta.
 server:
-  port: 8084  # El Gateway escucha en el puerto 8084.
+  port: 8085 
 

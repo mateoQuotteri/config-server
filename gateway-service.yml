@@ -1,30 +1,44 @@
 spring:
   config:
-    import: "optional:configserver:"  # Usa config-server, pero la app sigue funcionando si no está disponible.
+    import: "optional:configserver:"
+  application:
+    name: gateway-service
   security:
     oauth2:
       resourceserver:
         jwt:
-          issue-uri: http://localhost:8080/realms/dh
-application:
-  name: gateway-service  # Identificador del servicio.
-cloud:
-  config:
-    discovery:
-      serviceId: config-service  # Descubre automáticamente el servidor de configuración.
-      enabled: true
-  gateway:
-    default-filters:
-    - TokenRelay=
-    routes:
-      - id: checkout-service
-        uri: http://localhost:8082  # Redirige las solicitudes a checkout-service.
-        predicates:
-          - Path=/checkout/**  # Solo aplica a rutas que comiencen con /checkout/.
-        filters:
-          - StripPrefix=0  # No elimina partes del path.
-          - AddRequestHeader=X-Request-from, gateway  # Agrega un header a la solicitud.
-          - AddResponseHeader=X-Response-Red, blue  # Agrega un header a la respuesta.
-server:
-  port: 8085 
+          issuer-uri: http://localhost:8080/realms/dh
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/dh
+            token-uri: http://localhost:8080/realms/dh/protocol/openid-connect/token
+            authorization-uri: http://localhost:8080/realms/dh/protocol/openid-connect/auth
+            user-info-uri: http://localhost:8080/realms/dh/protocol/openid-connect/userinfo
+            jwk-set-uri: http://localhost:8080/realms/dh/protocol/openid-connect/certs
+        registration:
+          keycloak-app:
+            provider: keycloak
+            client-id: front-end
+            authorization-grant-type: authorization_code
+            scope: openid,email,profile
+  cloud:
+    config:
+      discovery:
+        serviceId: config-service
+        enabled: true
+    gateway:
+      default-filters:
+        - TokenRelay
+      routes:
+        - id: checkout-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=/checkout/**
+          filters:
+            - StripPrefix=0
+            - AddRequestHeader=X-Request-from, gateway
+            - AddResponseHeader=X-Response-Red, blue
 
+server:
+  port: 8085
